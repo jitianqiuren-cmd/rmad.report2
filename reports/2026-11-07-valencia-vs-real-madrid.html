@@ -1,0 +1,435 @@
+<title>メスタージャ観戦レポート</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+/* Layout: 一枚のマッチデー・プログラム。スコアボード → 要約 → 時系列 → 数字 → 布陣 → 採点 → 分析 → 文脈 → 自分のメモ */
+:root{
+  --bg:#F7F7FB; --surface:#FFFFFF; --ink:#151936; --muted:#5C6183; --line:#DEE0EC;
+  --rm:#2B3AA8; --rm-soft:#E4E7FA; --gold:#9A7614; --gold-soft:#F6EDD2;
+  --vcf:#D9640F; --vcf-soft:#FBE7D8; --red:#C42B2B; --yellow:#D9A400;
+  --pitch:#2E7A4A; --pitch-line:rgba(255,255,255,.75);
+  --f-display:"Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+  --f-body:"Noto Sans JP","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --f-num:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1022; --surface:#171A33; --ink:#ECEEF8; --muted:#A3A8C8; --line:#2C3052;
+  --rm:#9AA6FF; --rm-soft:#262C5C; --gold:#E2BE52; --gold-soft:#3A3220;
+  --vcf:#FF9A4D; --vcf-soft:#41291A; --red:#FF6B6B; --yellow:#F2C230;
+  --pitch:#1F5734; --pitch-line:rgba(255,255,255,.6); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1022; --surface:#171A33; --ink:#ECEEF8; --muted:#A3A8C8; --line:#2C3052;
+  --rm:#9AA6FF; --rm-soft:#262C5C; --gold:#E2BE52; --gold-soft:#3A3220;
+  --vcf:#FF9A4D; --vcf-soft:#41291A; --red:#FF6B6B; --yellow:#F2C230;
+  --pitch:#1F5734; --pitch-line:rgba(255,255,255,.6); color-scheme:dark}
+
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.75}
+.wrap{max-width:960px;margin:0 auto;padding-block:28px 64px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:grid;gap:44px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.3}
+h2{font-size:1.35rem;font-weight:900;display:flex;align-items:baseline;gap:12px}
+h2 small{font:600 .78rem/1 var(--f-num);letter-spacing:.14em;color:var(--gold);text-transform:uppercase}
+p{margin:0}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+section{display:grid;gap:18px;min-width:0}
+.note{font-size:.82rem;color:var(--muted)}
+
+/* Scoreboard */
+.board{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.board-top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 16px;padding:12px 20px;
+  border-bottom:1px solid var(--line);font-size:.8rem;color:var(--muted);letter-spacing:.04em}
+.board-top b{color:var(--ink);font-weight:700}
+.score{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:26px 20px 10px}
+.team{display:grid;gap:4px}
+.team.home{text-align:right}
+.team .name{font:900 clamp(1.15rem,3.6vw,1.7rem)/1.2 var(--f-display)}
+.team .sub{font-size:.78rem;color:var(--muted)}
+.team.away .name{color:var(--rm)}
+.digits{font:700 clamp(3.4rem,11vw,5.6rem)/1 var(--f-num);display:flex;gap:14px;align-items:center}
+.digits .dash{color:var(--muted);font-weight:500}
+.digits .w{color:var(--rm)}
+.goals{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:6px 20px 22px;font-size:.88rem}
+.goals ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.goals .h{text-align:right;color:var(--muted)}
+.goals .red-tag{color:var(--red);font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:0 20px 20px}
+.chip{font-size:.76rem;padding:3px 10px;border-radius:999px;background:var(--rm-soft);color:var(--ink)}
+.chip.gold{background:var(--gold-soft)}
+
+/* Summary */
+.summary{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.summary div{display:grid;gap:4px;padding-top:12px;border-top:3px solid var(--rm)}
+.summary div:nth-child(2){border-color:var(--gold)}
+.summary div:nth-child(3){border-color:var(--vcf)}
+.summary h3{font-size:1rem;font-weight:700}
+.summary p{font-size:.9rem;color:var(--muted)}
+
+/* Timeline */
+.timeline{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.timeline li{display:grid;grid-template-columns:56px 28px 1fr;gap:12px;align-items:start;padding:12px 0;border-bottom:1px solid var(--line)}
+.timeline .min{font:700 1.5rem/1 var(--f-num);color:var(--muted);text-align:right}
+.timeline .ic{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font:700 .7rem/1 var(--f-num);margin-top:2px}
+.ic.goal{background:var(--rm);color:var(--surface)}
+.ic.yc{background:var(--yellow);border-radius:3px;width:15px;height:21px;margin-left:3px}
+.ic.rc{background:var(--red);border-radius:3px;width:15px;height:21px;margin-left:3px}
+.ic.ht{background:var(--line);color:var(--ink)}
+.timeline .ev{min-width:0}
+.timeline .ev b{font-family:var(--f-display)}
+.timeline .ev p{font-size:.88rem;color:var(--muted)}
+.timeline .sc{font:700 .95rem var(--f-num);color:var(--rm);margin-left:6px}
+
+/* Stats */
+.stats{display:grid;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px}
+.stats-head{display:flex;justify-content:space-between;font-size:.78rem;font-weight:700;letter-spacing:.06em}
+.stats-head .v{color:var(--vcf)} .stats-head .r{color:var(--rm)}
+.stat{display:grid;gap:5px}
+.stat-row{display:grid;grid-template-columns:52px 1fr 52px;align-items:baseline;gap:8px}
+.stat-row .a,.stat-row .b{font:700 1.25rem/1 var(--f-num);font-variant-numeric:tabular-nums}
+.stat-row .a{color:var(--vcf)} .stat-row .b{color:var(--rm);text-align:right}
+.stat-row .lbl{text-align:center;font-size:.82rem;color:var(--muted)}
+.bar{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--line);gap:2px}
+.bar i{display:block;height:100%}
+.bar .bv{background:var(--vcf)} .bar .br{background:var(--rm)}
+
+/* Formation */
+.xi{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:28px;align-items:start}
+@media (max-width:700px){.xi{grid-template-columns:1fr}}
+.pitch{width:100%;max-width:340px;height:auto;border-radius:10px;display:block}
+.xi-notes{display:grid;gap:14px;min-width:0}
+.xi-notes dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:.9rem}
+.xi-notes dt{color:var(--muted);font-size:.8rem;padding-top:2px}
+.xi-notes dd{margin:0}
+
+/* Ratings */
+.table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:.88rem}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:.72rem;letter-spacing:.08em;color:var(--muted);font-weight:700;background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.pos{font:600 .85rem var(--f-num);color:var(--muted);letter-spacing:.06em}
+td.pl b{font-family:var(--f-display)}
+td.pl small{display:block;color:var(--muted);font-size:.76rem;line-height:1.4}
+.media{display:flex;flex-wrap:wrap;gap:4px}
+.media span{font:600 .8rem var(--f-num);padding:1px 7px;border-radius:5px;background:var(--rm-soft);white-space:nowrap}
+.media span.top{background:var(--gold-soft)}
+.media .none{background:none;color:var(--muted);padding:0}
+input[type=number]{width:64px;font:700 1rem var(--f-num);padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+input[type=text],textarea{width:100%;box-sizing:border-box;font:inherit;font-size:.86rem;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+input:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.mom{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;font-size:.88rem}
+.mom output{font:700 1.4rem var(--f-num);color:var(--rm)}
+
+/* Analysis */
+.analysis{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.analysis article{display:grid;gap:6px;align-content:start}
+.analysis h3{font-size:1.02rem;font-weight:700}
+.analysis h3 span{font:700 .8rem var(--f-num);color:var(--gold);margin-right:6px;letter-spacing:.08em}
+.analysis p{font-size:.92rem;max-width:65ch}
+
+/* Context */
+.form{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.form div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:2px}
+.form .d{font-size:.74rem;color:var(--muted)}
+.form .m{font-weight:700;font-family:var(--f-display)}
+.form .r{font:700 1.2rem var(--f-num)}
+.form .W{color:var(--rm)}
+.form .next{border-style:dashed}
+.form .next .r{color:var(--muted)}
+
+/* Notes */
+.memo{display:grid;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px}
+.memo label{font-weight:700;font-size:.88rem;display:block;margin-bottom:4px}
+.memo textarea{min-height:88px;resize:vertical}
+.memo-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.memo-foot{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+button{font:700 .85rem var(--f-body);padding:8px 16px;border-radius:8px;border:1px solid var(--rm);background:var(--rm);color:var(--surface);cursor:pointer}
+button.ghost{background:transparent;color:var(--rm)}
+#saveState{font-size:.8rem;color:var(--muted)}
+
+.sources{font-size:.8rem;color:var(--muted);display:grid;gap:6px}
+.sources ul{margin:0;padding-left:1.2em;display:grid;gap:2px}
+.sources a{color:var(--rm)}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .6s ease}}
+</style>
+
+<div class="wrap">
+
+<header class="board" aria-label="試合結果">
+  <div class="board-top">
+    <span><b>LaLiga 2026-27</b> 第12節</span>
+    <span>2026年11月7日（土）・エスタディオ・デ・メスタージャ（バレンシア）</span>
+  </div>
+  <div class="score">
+    <div class="team home"><span class="name">バレンシア</span><span class="sub">監督 ハビエル・アギーレ</span></div>
+    <div class="digits num" aria-label="0対3"><span>0</span><span class="dash">–</span><span class="w">3</span></div>
+    <div class="team away"><span class="name">レアル・マドリー</span><span class="sub">監督 ジョゼ・モウリーニョ</span></div>
+  </div>
+  <div class="goals">
+    <ul class="h"><li><span class="red-tag">■</span> ガヤ 79'（一発退場）</li></ul>
+    <ul>
+      <li>⚽ バルベルデ 28'</li>
+      <li>⚽ ギュレル 36'（アシスト：ベリンガム）</li>
+      <li>⚽ エムバペ 75'（アシスト：ギュレル）</li>
+    </ul>
+  </div>
+  <div class="chips">
+    <span class="chip gold">公式戦8連勝</span>
+    <span class="chip">リーグ戦4連勝</span>
+    <span class="chip">勝ち点30でバルサに並ぶ</span>
+    <span class="chip">クリーンシート</span>
+  </div>
+</header>
+
+<section aria-labelledby="s-sum">
+  <h2 id="s-sum">この試合を3行で <small>Summary</small></h2>
+  <div class="summary">
+    <div><h3>主導権は最初から最後までマドリー</h3><p>ボール支配68%、シュート19本対4本。ビッグチャンスは6対0で、バレンシアに枠内シュートを2本しか許さなかった。</p></div>
+    <div><h3>アルダ・ギュレルが1ゴール1アシスト</h3><p>2点目を自ら決め、3点目はエムバペへのラストパス。キーパス3本で各メディアの最高評価を集めた。</p></div>
+    <div><h3>ヴィニシウス不在でも揺るがない</h3><p>4試合出場停止の最終戦。左はディオマンデが攻守に走り切り、穴を感じさせなかった。</p></div>
+  </div>
+</section>
+
+<section aria-labelledby="s-tl">
+  <h2 id="s-tl">試合の流れ <small>Timeline</small></h2>
+  <ol class="timeline">
+    <li><span class="min num">26'</span><span class="ic yc" aria-label="警告"></span>
+      <div class="ev"><b>マフェオ（バレンシア）に警告</b><p>相手を掴んで止めたファウル。序盤から押し込まれ、バレンシアはファウルで流れを切るしかなかった。</p></div></li>
+    <li><span class="min num">28'</span><span class="ic goal" aria-label="ゴール">G</span>
+      <div class="ev"><b>バルベルデ</b><span class="sc">0–1</span><p>ペナルティエリア手前から強烈なハーフボレー。押し込み続けた時間帯をキャプテンが一撃で形にした。</p></div></li>
+    <li><span class="min num">36'</span><span class="ic goal" aria-label="ゴール">G</span>
+      <div class="ev"><b>ギュレル</b><span class="sc">0–2</span><p>ベリンガムのクロスがディフレクションしてゴール前へ。ギュレルが至近距離から押し込む。直近5試合で3点目。</p></div></li>
+    <li><span class="min num">HT</span><span class="ic ht" aria-label="ハーフタイム">—</span>
+      <div class="ev"><b>前半終了 0–2</b><p>2点差で折り返し。バレンシアはシュート位置までほとんど運べず。</p></div></li>
+    <li><span class="min num">75'</span><span class="ic goal" aria-label="ゴール">G</span>
+      <div class="ev"><b>エムバペ</b><span class="sc">0–3</span><p>ギュレルのスルーパスで裏へ抜け出し、飛び出したGKをかわして無人のゴールへ。試合を決めた。</p></div></li>
+    <li><span class="min num">79'</span><span class="ic rc" aria-label="退場"></span>
+      <div class="ev"><b>ガヤ（バレンシア）一発退場</b><p>エムバペへの激しいタックルでキャプテンがレッドカード。バレンシアは残り時間を10人で戦う。</p></div></li>
+    <li><span class="min num">FT</span><span class="ic ht" aria-label="試合終了">—</span>
+      <div class="ev"><b>試合終了 0–3</b><p>試合全体で警告7枚・退場1枚と荒れた展開だったが、マドリーは最後まで崩れなかった。</p></div></li>
+  </ol>
+</section>
+
+<section aria-labelledby="s-st">
+  <h2 id="s-st">スタッツ <small>Match stats</small></h2>
+  <div class="stats" id="stats">
+    <div class="stats-head"><span class="v">バレンシア</span><span class="r">レアル・マドリー</span></div>
+  </div>
+  <p class="note">xGは集計元で差があり、マドリー2.20〜2.32、バレンシア0.16〜0.24。ここではESPNの値を使っています。ビッグチャンスはSofascore、枠内シュートはSIの数字です。</p>
+</section>
+
+<section aria-labelledby="s-xi">
+  <h2 id="s-xi">マドリーの布陣 <small>Starting XI</small></h2>
+  <div class="xi">
+    <svg class="pitch" viewBox="0 0 300 400" role="img" aria-label="4-3-3の布陣図">
+      <rect x="0" y="0" width="300" height="400" fill="var(--pitch)"/>
+      <g fill="none" stroke="var(--pitch-line)" stroke-width="1.5">
+        <rect x="10" y="10" width="280" height="380"/>
+        <line x1="10" y1="200" x2="290" y2="200"/>
+        <circle cx="150" cy="200" r="38"/>
+        <rect x="70" y="10" width="160" height="56"/><rect x="115" y="10" width="70" height="20"/>
+        <rect x="70" y="334" width="160" height="56"/><rect x="115" y="370" width="70" height="20"/>
+      </g>
+      <g id="players" font-family="Noto Sans JP, sans-serif" font-size="11" text-anchor="middle"></g>
+    </svg>
+    <div class="xi-notes">
+      <dl>
+        <dt>システム</dt><dd>4-3-3（報道されたメンバーからの推定）</dd>
+        <dt>GK</dt><dd>クルトワ</dd>
+        <dt>DF</dt><dd>バルベルデ（C）、コナテ、ハイセン、ククレジャ</dd>
+        <dt>MF</dt><dd>チュアメニ、ベルナルド、ベリンガム</dd>
+        <dt>FW</dt><dd>ギュレル、エムバペ、ディオマンデ</dd>
+        <dt>欠場</dt><dd>ヴィニシウス（出場停止 4試合目）</dd>
+      </dl>
+      <p class="note">先発は試合前の報道に基づきます。各選手の立ち位置と途中交代は確認できる情報源がなかったため載せていません。</p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="s-rt">
+  <h2 id="s-rt">選手採点 <small>Ratings</small></h2>
+  <p class="note">メディア採点は10点満点。「あなたの採点」と「ひとこと」はこのブラウザに保存されます。</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>POS</th><th>選手</th><th>メディア採点</th><th>あなたの採点</th><th>ひとこと</th></tr></thead>
+      <tbody id="ratings"></tbody>
+    </table>
+  </div>
+  <div class="mom">
+    <span>あなたの平均点 <output id="avg">–</output></span>
+    <span>あなたのMOM <output id="mom">–</output></span>
+  </div>
+</section>
+
+<section aria-labelledby="s-an">
+  <h2 id="s-an">戦術メモ <small>Analysis</small></h2>
+  <div class="analysis">
+    <article><h3><span>01</span>引いた相手を枠内11本で攻略</h3>
+      <p>バレンシアはボールを3割程度しか持てず、自陣に引いて守る時間が長かった。マドリーは19本のうち11本を枠に飛ばしている。遠めから狙わされたのではなく、エリア内で質の高い機会を作れていた。xGが約2.3あったことからも、3得点は偶然ではない。</p></article>
+    <article><h3><span>02</span>右のギュレルが起点</h3>
+      <p>ヴィニシウス不在の試合で、攻撃の設計図を描いたのはギュレル。キーパス3本のうち1本がエムバペのゴールにつながった。自身の得点はクロスへの詰めで、出し手と受け手の両方を一人でこなした。</p></article>
+    <article><h3><span>03</span>ベリンガムのカウンタープレス</h3>
+      <p>ボールを失った直後の寄せが速く、バレンシアのカウンターを発動前に止めていた。相手のシュートが4本に留まった理由の一つ。2点目のアシストも記録している。</p></article>
+    <article><h3><span>04</span>エムバペは裏抜けで脅威に</h3>
+      <p>中央で最終ラインと駆け引きを続け、75分にはギュレルのパス一本で抜け出した。79分の退場もエムバペへのタックルから。裏へのランが最後まで相手を苦しめていた。</p></article>
+    <article><h3><span>05</span>課題はボールロスト</h3>
+      <p>チュアメニは中盤の底で何度かボールを失い、SIの採点ではマドリー先発で最も低い7.4だった。格上相手ならショートカウンターを受けかねない場面で、次のCLやクラシコ級の試合では気になる点。</p></article>
+    <article><h3><span>06</span>クルトワは2本で十分</h3>
+      <p>枠内シュートは2本だけだったが、そのどちらも確実に止めた。仕事が少ない試合でも集中を切らさず、無失点で終えた。</p></article>
+  </div>
+</section>
+
+<section aria-labelledby="s-cx">
+  <h2 id="s-cx">直近の戦績と次戦 <small>Form</small></h2>
+  <div class="form">
+    <div><span class="d">11/1 LaLiga（アウェー）</span><span class="m">ラシン・サンタンデール</span><span class="r W">○ 3–0</span><span class="note">エムバペ(PK)、ベリンガム、ディオマンデ</span></div>
+    <div><span class="d">11/4 CL（アウェー）</span><span class="m">AEKアテネ</span><span class="r W">○ 3–2</span><span class="note">競り勝って連勝継続</span></div>
+    <div><span class="d">11/7 LaLiga（アウェー）</span><span class="m">バレンシア</span><span class="r W">○ 3–0</span><span class="note">公式戦8連勝</span></div>
+    <div class="next"><span class="d">11/21 LaLiga（次戦）</span><span class="m">セルタ</span><span class="r">代表ウィーク明け</span><span class="note">ヴィニシウスが出場停止明け</span></div>
+  </div>
+  <p class="note">この試合の結果、マドリーは勝ち点30でバルセロナと並び、得失点差で2位（バルサより1試合多く消化）。バレンシアは勝ち点9で19位に沈んだまま。</p>
+</section>
+
+<section aria-labelledby="s-memo">
+  <h2 id="s-memo">観戦メモ <small>My notes</small></h2>
+  <div class="memo">
+    <div class="memo-grid">
+      <div><label for="m-where">どこで観たか</label><input type="text" id="m-where" placeholder="例：自宅でDAZN、スポーツバー、現地メスタージャ"></div>
+      <div><label for="m-mood">試合の満足度（1〜5）</label><input type="number" id="m-mood" min="1" max="5" step="1"></div>
+    </div>
+    <div><label for="m-best">一番印象に残った場面</label><textarea id="m-best" placeholder="例：28分、バルベルデのハーフボレーがネットに突き刺さった瞬間"></textarea></div>
+    <div><label for="m-free">感想・次の試合への期待</label><textarea id="m-free" placeholder="例：ヴィニシウスが戻るセルタ戦、左はディオマンデとどう使い分けるか"></textarea></div>
+    <div class="memo-foot">
+      <span id="saveState">入力は自動でこのブラウザに保存されます</span>
+      <button type="button" id="copyBtn">レポートをテキストでコピー</button>
+    </div>
+  </div>
+</section>
+
+<footer class="sources">
+  <p>出典（2026年11月13日時点の検索結果より）</p>
+  <ul>
+    <li><a href="https://www.realmadrid.com/en-US/news/football/first-team/reports/cronica-valencia-real-madrid-j12-liga-07-11-2026">Real Madrid 公式 試合レポート</a></li>
+    <li><a href="https://www.valenciacf.com/match-report-valencia-cf-real-madrid">Valencia CF 公式 試合レポート</a></li>
+    <li><a href="https://www.espn.com/soccer/report/_/gameId/401882808">ESPN Game Analysis</a> / <a href="https://www.espn.com/soccer/team-stats/_/gameId/401882808/league/esp.1">Team Stats</a></li>
+    <li><a href="https://www.aljazeera.com/sports/2026/11/7/real-madrid-beat-valencia-3-0-to-draw-level-with-la-liga-leaders-barcelona">Al Jazeera</a></li>
+    <li><a href="https://www.101greatgoals.com/match-reports/valencia-0-3-real-madrid-report-result-and-goals-as-los-blancos-level-barcelona/">101 Great Goals</a></li>
+    <li><a href="https://sofascore.com/news/real-madrid-3-0-valencia-guler-shines-in-laliga">Sofascore</a> / <a href="https://xgscore.io/la-liga/valencia-real-madrid/xg-statistics">xGscore</a> / <a href="https://www.flashscore.es/partido/futbol/real-madrid-W8mj7MDD/valencia-cf-CQeaytrD/">Flashscore</a></li>
+    <li>採点：<a href="https://sports.yahoo.com/articles/player-ratings-valencia-0-3-014407456.html">Yahoo Sports</a>、<a href="https://www.managingmadrid.com/real-madrid-cf-la-liga/115257/player-ratings-valencia-0-3-real-madrid">Managing Madrid</a>、<a href="https://www.si.com/soccer/real-madrid-player-ratings-vs-valencia-blancos-cruise-pressure-leaders">SI</a>、<a href="https://www.fotmob.com/matches/real-madrid-vs-valencia/2ycigb">FotMob</a>、<a href="https://www.foxsports.com/soccer/la-liga-valencia-vs-real-madrid-nov-07-2026-game-boxscore-909069">FOX Sports</a></li>
+    <li><a href="https://www.milenio.com/deportes/futbol-internacional/resultado-valencia-vs-real-madrid-resumen-goles-jornada-12-laliga-2026">Milenio</a> / <a href="https://www.clarosports.com/futbol/laliga/valencia-vs-real-madrid-en-vivo-laliga-2026-resultado-y-goles-de-la-jornada-12/">Claro Sports</a></li>
+  </ul>
+</footer>
+</div>
+
+<script>
+(function(){
+  var KEY = "rm-report-2026-11-07-valencia";
+
+  // [ラベル, バレンシア, マドリー, 表示形式]
+  var STATS = [
+    ["ボール支配率", 32, 68, "%"],
+    ["シュート", 4, 19, ""],
+    ["枠内シュート", 2, 11, ""],
+    ["ビッグチャンス", 0, 6, ""],
+    ["xG（ゴール期待値）", 0.16, 2.26, "x"],
+    ["ゴール", 0, 3, ""]
+  ];
+  var statsEl = document.getElementById("stats");
+  STATS.forEach(function(s){
+    var a=s[1], b=s[2], t=a+b||1, fmt=function(v){return s[3]==="%"?v+"%":s[3]==="x"?v.toFixed(2):v};
+    var d=document.createElement("div"); d.className="stat";
+    d.innerHTML='<div class="stat-row"><span class="a">'+fmt(a)+'</span><span class="lbl">'+s[0]+'</span><span class="b">'+fmt(b)+'</span></div>'+
+      '<div class="bar" aria-hidden="true"><i class="bv" style="width:'+(a/t*100)+'%"></i><i class="br" style="width:'+(b/t*100)+'%"></i></div>';
+    statsEl.appendChild(d);
+  });
+
+  // [ID, POS, 名前, 補足, x, y, メディア採点[[媒体,点]]]
+  var XI = [
+    ["courtois","GK","クルトワ","枠内2本を確実にセーブ",150,362,[["Yahoo",8],["SI/FotMob",7.9]]],
+    ["valverde","RB","バルベルデ","先制ゴール・主将",252,298,[["Yahoo",8.5]]],
+    ["konate","CB","コナテ","",190,318,[]],
+    ["huijsen","CB","ハイセン","",110,318,[]],
+    ["cucurella","LB","ククレジャ","",48,298,[]],
+    ["tchouameni","DM","チュアメニ","ボールロストがやや多め",150,248,[["SI",7.4]]],
+    ["bernardo","CM","ベルナルド","",212,200,[]],
+    ["bellingham","CM","ベリンガム","2点目をアシスト",88,200,[["Managing Madrid",9]]],
+    ["guler","RW","ギュレル","1ゴール1アシスト・MOM",246,108,[["Sofascore",9.3],["Yahoo",9],["FotMob",8.9]]],
+    ["mbappe","ST","エムバペ","3点目",150,78,[["Yahoo",8.5],["FOX",7.8]]],
+    ["diomande","LW","ディオマンデ","攻守に貢献",54,108,[["Managing Madrid",8.5]]]
+  ];
+
+  var NS="http://www.w3.org/2000/svg", g=document.getElementById("players");
+  XI.forEach(function(p){
+    var c=document.createElementNS(NS,"circle");
+    c.setAttribute("cx",p[4]); c.setAttribute("cy",p[5]); c.setAttribute("r",13);
+    c.setAttribute("fill", p[0]==="guler" ? "var(--gold)" : "#FFFFFF");
+    c.setAttribute("stroke","#151936"); c.setAttribute("stroke-width","1.5");
+    var pos=document.createElementNS(NS,"text");
+    pos.setAttribute("x",p[4]); pos.setAttribute("y",p[5]+4); pos.setAttribute("fill","#151936");
+    pos.setAttribute("font-size","9"); pos.setAttribute("font-weight","700"); pos.textContent=p[1];
+    var nm=document.createElementNS(NS,"text");
+    nm.setAttribute("x",p[4]); nm.setAttribute("y",p[5]+27); nm.setAttribute("fill","#FFFFFF");
+    nm.setAttribute("font-weight","700"); nm.textContent=p[2];
+    g.appendChild(c); g.appendChild(pos); g.appendChild(nm);
+  });
+
+  var state={};
+  try{ state=JSON.parse(localStorage.getItem(KEY)||"{}")||{}; }catch(e){ state={}; }
+  function save(){
+    try{ localStorage.setItem(KEY, JSON.stringify(state)); document.getElementById("saveState").textContent="保存しました"; }
+    catch(e){ document.getElementById("saveState").textContent="このブラウザでは保存できません（入力内容はページを閉じると消えます）"; }
+  }
+
+  var tbody=document.getElementById("ratings");
+  XI.forEach(function(p){
+    var top = p[0]==="guler";
+    var media = p[6].length ? p[6].map(function(m){return '<span'+(top?' class="top"':'')+'>'+m[0]+' '+m[1]+'</span>';}).join("")
+      : '<span class="none">掲載なし</span>';
+    var tr=document.createElement("tr");
+    tr.innerHTML='<td class="pos">'+p[1]+'</td>'+
+      '<td class="pl"><b>'+p[2]+'</b>'+(p[3]?'<small>'+p[3]+'</small>':'')+'</td>'+
+      '<td><div class="media">'+media+'</div></td>'+
+      '<td><input type="number" id="r-'+p[0]+'" min="1" max="10" step="0.5" aria-label="'+p[2]+'の採点"></td>'+
+      '<td><input type="text" id="c-'+p[0]+'" aria-label="'+p[2]+'へのひとこと" placeholder="ひとこと"></td>';
+    tbody.appendChild(tr);
+  });
+
+  function recalc(){
+    var sum=0,n=0,best=null;
+    XI.forEach(function(p){
+      var v=parseFloat(state["r-"+p[0]]);
+      if(!isNaN(v)){ sum+=v; n++; if(!best||v>best.v) best={v:v,name:p[2]}; }
+    });
+    document.getElementById("avg").textContent = n ? (sum/n).toFixed(2) : "–";
+    document.getElementById("mom").textContent = best ? best.name : "–";
+  }
+
+  document.querySelectorAll("#ratings input, .memo input, .memo textarea").forEach(function(el){
+    if(state[el.id]!=null) el.value=state[el.id];
+    el.addEventListener("input",function(){ state[el.id]=el.value; save(); recalc(); });
+  });
+  recalc();
+
+  document.getElementById("copyBtn").addEventListener("click",function(){
+    var lines=["【観戦レポート】LaLiga第12節 バレンシア 0-3 レアル・マドリー（2026/11/7 メスタージャ）",
+      "得点：バルベルデ28'、ギュレル36'、エムバペ75'／ガヤ79'退場",""];
+    if(state["m-where"]) lines.push("観戦場所："+state["m-where"]);
+    if(state["m-mood"]) lines.push("満足度："+state["m-mood"]+"/5");
+    var rs=XI.filter(function(p){return state["r-"+p[0]];}).map(function(p){
+      return "・"+p[2]+" "+state["r-"+p[0]]+(state["c-"+p[0]]?"（"+state["c-"+p[0]]+"）":"");});
+    if(rs.length){ lines.push("","採点："); lines=lines.concat(rs); lines.push("平均 "+document.getElementById("avg").textContent+"／MOM "+document.getElementById("mom").textContent); }
+    if(state["m-best"]) lines.push("","印象に残った場面：",state["m-best"]);
+    if(state["m-free"]) lines.push("","感想：",state["m-free"]);
+    var text=lines.join("\n"), btn=this;
+    function done(msg){ btn.textContent=msg; setTimeout(function(){btn.textContent="レポートをテキストでコピー";},2000); }
+    try{
+      navigator.clipboard.writeText(text).then(function(){done("コピーしました");},function(){fallback();});
+    }catch(e){ fallback(); }
+    function fallback(){
+      var ta=document.getElementById("m-free"); var old=ta.value; ta.value=text; ta.select();
+      done("選択したのでコピーしてください"); setTimeout(function(){ta.value=old;},8000);
+    }
+  });
+})();
+</script>
